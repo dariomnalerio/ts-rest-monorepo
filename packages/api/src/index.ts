@@ -3,6 +3,8 @@ import express from "express";
 import cors from "cors"
 import bodyParser from "body-parser";
 import { contract } from "contract"
+import { generateOpenApi } from "@ts-rest/open-api";
+import swaggerUi from "swagger-ui-express";
 const app = express();
 
 app.use(cors());
@@ -24,6 +26,17 @@ const router = s.router(contract, {
 })
 
 createExpressEndpoints(contract, router, app);
+
+const openApiDocument = generateOpenApi(contract, {
+  info: {
+    title: "Test API",
+    version: "1.0.0",
+    description: "Test API description",
+
+  }
+})
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(openApiDocument));
 
 const port = 3000;
 app.listen(port, () => {
